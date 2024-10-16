@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/gob"
+	"encoding/json"
 	"io"
 	"os"
 	"time"
@@ -24,11 +25,13 @@ func newRedisCache[valueType any](cfg RedisConf) (*RedisCache[valueType], error)
 		"redis-cache",
 		cache.RedisClientConfig{
 			Endpoint:            []string{cfg.Endpoint.String()},
-			Username:            "default",
-			Password:            flagext.SecretWithValue(""),
+			Username:            cfg.Username,
+			Password:            flagext.SecretWithValue(cfg.Password),
 			MaxAsyncConcurrency: cfg.MaxAsyncConcurrency,
 			MaxAsyncBufferSize:  cfg.MaxAsyncBufferSize,
 			DB:                  cfg.DB,
+			ConnectionPoolSize:  10,
+			MinIdleConnections:  1,
 		},
 		//TODO add prometheus registerer here
 		nil,
@@ -54,12 +57,16 @@ func (c *RedisCache[valueType]) Get(key string) (*valueType, error) {
 		return nil, errNotFound
 	}
 
-	decoder := gob.NewDecoder(bytes.NewReader(data[key]))
-	if err := decoder.Decode(&out); err != nil {
-		if err != io.EOF && err != io.ErrUnexpectedEOF {
-			return nil, err
-		}
+	err := json.Unmarshal(data[key], &out)
+	if err != nil {
+		return nil, err
 	}
+	// decoder := gob.NewDecoder()
+	// if err := decoder.Decode(&out); err != nil {
+	// 	if err != io.EOF && err != io.ErrUnexpectedEOF {
+	// 		return nil, err
+	// 	}
+	// }
 
 	return &out, nil
 }
@@ -101,13 +108,17 @@ func (c *RedisCache[valueType]) Set(key string, value *valueType, ttl time.Durat
 		return nil
 	}
 
-	var indexBuffer bytes.Buffer
-
-	encoder := gob.NewEncoder(&indexBuffer)
-	if err := encoder.Encode(*value); err != nil {
+	valueBytes, err := json.Marshal(value)
+	if err != nil {
 		return err
 	}
-	c.client.SetAsync(key, indexBuffer.Bytes(), ttl)
+	// var indexBuffer bytes.Buffer
+
+	// encoder := gob.NewEncoder(&indexBuffer)
+	// if err := encoder.Encode(*value); err != nil {
+	// 	return err
+	// }
+	c.client.SetAsync(key, valueBytes, ttl)
 	return nil
 }
 

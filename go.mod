@@ -819,6 +819,13 @@ require (
 	github.com/jaswdr/faker/v2 v2.3.2
 )
 
+require github.com/ory/dockertest v3.3.5+incompatible
+
+require (
+	github.com/bradfitz/gomemcache v0.0.0-20230905024940-24af94b03874
+	github.com/go-redis/redis v6.15.9+incompatible
+)
+
 // NOTE: replace directives below must always be *temporary*.
 //
 // Adding a replace directive to change a module to a fork of a module will
@@ -856,7 +863,6 @@ replace gopkg.in/yaml.v2 => github.com/rfratto/go-yaml v0.0.0-20211119180816-773
 replace (
 	github.com/Azure/azure-sdk-for-go => github.com/Azure/azure-sdk-for-go v36.2.0+incompatible
 	github.com/Azure/azure-storage-blob-go => github.com/MasslessParticle/azure-storage-blob-go v0.14.1-0.20220216145902-b5e698eff68e
-	github.com/bradfitz/gomemcache => github.com/themihai/gomemcache v0.0.0-20180902122335-24332e2d58ab
 	github.com/cloudflare/cloudflare-go => github.com/grafana/cloudflare-go v0.0.0-20230110200409-c627cf6792f2
 	github.com/go-kit/log => github.com/dannykopping/go-kit-log v0.2.2-0.20221002180827-5591c1641b6b
 	github.com/gocql/gocql => github.com/grafana/gocql v0.0.0-20200605141915-ba5dc39ece85

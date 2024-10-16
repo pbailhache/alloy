@@ -1,11 +1,10 @@
 package cache
 
 import (
+	"errors"
 	"time"
 
-	"github.com/grafana/dskit/cache"
 	"github.com/grafana/dskit/flagext"
-	"github.com/pkg/errors"
 )
 
 const (
@@ -13,10 +12,10 @@ const (
 	InMemory = "inmemory"
 
 	// Memcached is the value for the Memcached cache backend.
-	Memcached = cache.BackendMemcached
+	Memcached = "memcached"
 
 	// Redis is the value for the Redis cache backend.
-	Redis = cache.BackendRedis
+	Redis = "redis"
 
 	// Default is the value for the default cache backend.
 	Default = InMemory
